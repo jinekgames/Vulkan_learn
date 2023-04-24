@@ -13,7 +13,7 @@ int main() {
     auto result = App::Inst().Run();
 
     if (!CHECK_RESULT(result)) {
-        PRINT_E("Failed to run app");
+        PRINT_E("Failed to run app. Code: %d", result);
         return result;
     }
 

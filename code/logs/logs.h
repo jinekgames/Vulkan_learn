@@ -1,15 +1,17 @@
 #pragma once
 
+#include <log_color.h>
+
 #include <stdio.h>
 
 #define LOGS_DEFAULT_TAG "JNK"
 
-#if defined(WIN32)
-#define PRINT_LVL_TAG(lvl, tag, ...) { printf("%s  (%s:%d)\t%s : ", tag, __FILE__, __LINE__, lvl); printf(__VA_ARGS__); printf("\n"); }
-#define LOGS_LVL_ERROR   "Error"
-#define LOGS_LVL_WARNING "Warning"
-#define LOGS_LVL_VERBOSE "Verbose"
-#define LOGS_LVL_INFO    "Info"
+#if defined(WIN32) || defined(LINUX) || defined(MAC_OS)
+#define PRINT_LVL_TAG(lvl, tag, ...) { printf("%s  (%s:%d)\t%s\t: ", tag, __FILE__, __LINE__, lvl); printf(__VA_ARGS__); printf("\n" COLOR_RESET); }
+#define LOGS_LVL_ERROR   COLOR_RED    "Error"
+#define LOGS_LVL_WARNING COLOR_YELLOW "Warning"
+#define LOGS_LVL_VERBOSE COLOR_CYAN   "Verbose"
+#define LOGS_LVL_INFO    COLOR_GREEN  "Info"
 #else
 #error "logs unsupported"
 #endif

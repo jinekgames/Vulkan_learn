@@ -8,6 +8,7 @@ set(BINS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/bins)
 message("Bins will be written to: \"${BINS_DIR}\"")
 
 
+# @todo unused
 set(VULKAN_DIR "")
 if (NOT "$ENV{VK_SDK_PATH}" STREQUAL "")
 	set(VULKAN_DIR "$ENV{VK_SDK_PATH}")
@@ -28,6 +29,13 @@ set(GLFW_OUT ${BINS_DIR}/glfw)
 set(GLM_DIR ${SUBMODULES_DIR}/glm)
 
 set(FINAL_OUT ${BINS_DIR}/final_package)
+
+
+if (MSVC)
+	add_compile_options(/std:c++17)
+else() # GCC 8+
+    add_compile_options(-std=c++17)
+endif()
 
 
 add_subdirectory(${CODE_DIR} ${FINAL_OUT})

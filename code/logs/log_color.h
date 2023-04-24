@@ -1,0 +1,13 @@
+#pragma once
+
+#define COLOR_ESCAPE "\033"
+
+#define COLOR_RESET   COLOR_ESCAPE "[0m"
+#define COLOR_BLACK   COLOR_ESCAPE "[30m"
+#define COLOR_RED     COLOR_ESCAPE "[31m"
+#define COLOR_GREEN   COLOR_ESCAPE "[32m"
+#define COLOR_YELLOW  COLOR_ESCAPE "[33m"
+#define COLOR_BLUE    COLOR_ESCAPE "[34m"
+#define COLOR_MAGENTA COLOR_ESCAPE "[35m"
+#define COLOR_CYAN    COLOR_ESCAPE "[36m"
+#define COLOR_WHITE   COLOR_ESCAPE "[37m"
