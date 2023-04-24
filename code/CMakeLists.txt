@@ -1,21 +1,23 @@
 project(Vulkan_main)
 
 include_directories(
-	app/
-	logs/
-	${GLM_DIR}
-	${GLFW_DIR}/include
-	${VULKAN_DIR}/Include
+    app/
+    logs/
+    ${GLM_DIR}
+    ${GLFW_DIR}/include
+    ${VULKAN_DIR}/Include
 )
 
 set(SOURCE
-	prog.cpp
-	app/app.h
-	app/app.cpp
+    prog.cpp
+    app/app.h
+    app/app.cpp
+    app/vulkan_app/vulkan_app.h
+    app/vulkan_app/vulkan_app.cpp
 )
 
 add_executable(hello
-	${SOURCE}
+    ${SOURCE}
 )
 
 add_subdirectory(${GLFW_DIR} ${GLFW_OUT})
