@@ -9,8 +9,8 @@
 
 #include <app_result.h>
 
-#include <optional>
 #include <vector>
+#include <map>
 
 class VulkanApp {
 
@@ -37,9 +37,43 @@ private:
     AppResult CreateVkInstance();
     AppResult FindPhysicalDevice();
 
-    AppResult FindUnsupportedExtensions(const ExtensionsList& exts, ExtensionsList& unsupportedExts);
-    AppResult FindUnsupportedLayers(const LayersList& layers, LayersList& unsupportedLayers);
-    void FindUnsuitablePhysDevices(const std::vector<VkPhysicalDevice>& devices, std::vector<VkPhysicalDevice>& unsuitableDevices);
+    /**
+     * @brief
+     * Check if specified extensions are supported by the layer or instance
+     * @param exts
+     * extensions to be checked
+     * @param unsupportedExts
+     * extensionts that ill not be supported
+     * @param layer
+     * set or nullptr to check from instance, eigther c-string with name of layer to check from layer
+     * @return
+     * AppResult code
+    */
+    AppResult CheckSupportedInstanceExtensions(const ExtensionsList& exts, ExtensionsList& unsupportedExts,
+                                               const char* layer = nullptr);
+    AppResult CheckSupportedInstanceLayers(const LayersList& layers, LayersList& unsupportedLayers);
+
+    struct PhysDevInfo {
+        VkPhysicalDeviceFeatures features;
+        std::vector<VkQueueFamilyProperties> familiesProps;
+        VkPhysicalDeviceProperties properties;
+    };
+
+    typedef std::map<VkPhysicalDevice, PhysDevInfo> PhysDevList;
+
+    AppResult GetPhysicalDevicesInfos(PhysDevList& physDevList);
+    /**
+     * @brief
+     * Check if physical evices support specified features and have a graphics family
+     * @param devices
+     * list of devices with treir properties
+     * @param unsuitableDevices
+     * list of unsuitable device handles
+     * @param features
+     * features to check
+    */
+    void CheckSuitablePhysDevices(const PhysDevList& devices, std::vector<VkPhysicalDevice>& unsuitableDevices,
+                                  const VkPhysicalDeviceFeatures& features);
 
 
 // Vulkan objects
