@@ -1,2 +1,5 @@
 # build output dir
 build/
+
+# VSCode dir
+.vscode/

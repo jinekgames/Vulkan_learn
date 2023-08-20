@@ -32,18 +32,10 @@ AppResult App::Run() {
 }
 
 AppResult App::Init() {
-
     AppResult r = APP_CODE_OK;
 
-    r = InitWindow();
-    if(!APP_CHECK_RESULT(r)) {
-        return r;
-    }
-
-    r = VulkanApp::Init();
-    if(!APP_CHECK_RESULT(r)) {
-        return r;
-    }
+    APP_CHECK_CALL(InitWindow());
+    APP_CHECK_CALL(VulkanApp::Init());
 
     return r;
 }

@@ -5,6 +5,7 @@
 #include <log_color.h>
 
 #define LOGS_DEFAULT_TAG "JNK"
+#define LOGS_LAYER_TAG "validation layer"
 
 template<class LvlType, class TagType, class... Args>
 void _app_log_message(LvlType lvl, TagType tag, Args... args) { throw "unexpected realization"; }
