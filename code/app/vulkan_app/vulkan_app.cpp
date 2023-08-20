@@ -13,9 +13,19 @@ VulkanApp::~VulkanApp() {
 
 AppResult VulkanApp::Init() {
 
-    VkResult r = VK_SUCCESS;
-
     // Create Vk instanse
+    APP_CHECK_CALL(CreateVkInstance());
+
+    // Find physical device
+    APP_CHECK_CALL(FindPhysicalDevice());
+
+    // Create logical device
+    
+
+    return APP_CODE_OK;
+}
+
+AppResult VulkanApp::CreateVkInstance() {
 
     VkApplicationInfo appInfo{};
     appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -50,7 +60,7 @@ AppResult VulkanApp::Init() {
     {
         ExtensionsList unsupportedExts{};
         AppResult r = FindUnsupportedExtensions(extensions, unsupportedExts);
-        if (CHECK_RESULT(r)) {
+        if (APP_CHECK_RESULT(r)) {
             if (unsupportedExts.empty()) {
                 PRINT("All required Vulkan extensions are supported");
             } else {
@@ -65,8 +75,8 @@ AppResult VulkanApp::Init() {
         }
     }
 
-#if VALIDATION_LAYERS_ENABLED
     LayersList validationLayers{};
+#if VALIDATION_LAYERS_ENABLED
     validationLayers.reserve(vulkanValidationLayers.size());
     for (auto layer : vulkanValidationLayers) {
         validationLayers.push_back(layer);
@@ -75,7 +85,7 @@ AppResult VulkanApp::Init() {
     {
         LayersList unsupportedLayers{};
         AppResult r = FindUnsupportedLayers(validationLayers, unsupportedLayers);
-        if (CHECK_RESULT(r)) {
+        if (APP_CHECK_RESULT(r)) {
             if (unsupportedLayers.empty()) {
                 PRINT("All requested Vulkan validation layers are supported");
             } else {
@@ -108,77 +118,75 @@ AppResult VulkanApp::Init() {
 
     // @todo Setup debug messenger
 
-    r = vkCreateInstance(&createInfo, nullptr, &vkInst);
+
+    VkResult r = vkCreateInstance(&createInfo, nullptr, &vkInst);
     if (r != VK_SUCCESS) {
         PRINT_E("Failed to create Vulkan instanse. Vk error code: %d", r);
         return APP_CODE_VK_INIT_FAIURE;
     }
     PRINT("Vulkan instanse created");
 
-    // Find physical device
-    {
-        uint32_t deviceCount = 0;
-        std::vector<VkPhysicalDevice> devices;
-        vkEnumeratePhysicalDevices(vkInst, &deviceCount, nullptr);
-        if (!deviceCount) {
-            PRINT_E("None of your graphics adapters support Vulkan");
-            return APP_CODE_VK_INIT_FAIURE;
-        }
-        devices.resize(deviceCount);
-        vkEnumeratePhysicalDevices(vkInst, &deviceCount, devices.data());
+    return APP_CODE_OK;
+}
 
-        // Filter appropriate devices
-        std::vector<VkPhysicalDevice> unsuitableDevices;
-        FindUnsuitablePhysDevices(devices, unsuitableDevices);
-        for (auto device : unsuitableDevices) {
-            devices.erase(std::find(devices.begin(), devices.end(), device));
-        }
+AppResult VulkanApp::FindPhysicalDevice() {
 
-        std::map<VkPhysicalDevice, VkPhysicalDeviceProperties> devicesWhithProps;
-        for (auto device : devices) {
-            VkPhysicalDeviceProperties prop;
-            vkGetPhysicalDeviceProperties(device, &prop);
-            devicesWhithProps.emplace(device, prop);
-        }
+    uint32_t deviceCount = 0;
+    std::vector<VkPhysicalDevice> devices;
+    vkEnumeratePhysicalDevices(vkInst, &deviceCount, nullptr);
+    if (!deviceCount) {
+        PRINT_E("None of your graphics adapters support Vulkan");
+        return APP_CODE_VK_INIT_FAIURE;
+    }
+    devices.resize(deviceCount);
+    vkEnumeratePhysicalDevices(vkInst, &deviceCount, devices.data());
 
-        // Prefer to use more or less efficient GPU
-        for (auto d : devicesWhithProps) {
-            if (d.second.deviceType == 
+    // Filter appropriate devices
+    std::vector<VkPhysicalDevice> unsuitableDevices;
+    FindUnsuitablePhysDevices(devices, unsuitableDevices);
+    for (auto device : unsuitableDevices) {
+        devices.erase(std::find(devices.begin(), devices.end(), device));
+    }
+
+    std::map<VkPhysicalDevice, VkPhysicalDeviceProperties> devicesWhithProps;
+    for (auto device : devices) {
+        VkPhysicalDeviceProperties prop;
+        vkGetPhysicalDeviceProperties(device, &prop);
+        devicesWhithProps.emplace(device, prop);
+    }
+
+    // Prefer to use more or less efficient GPU
+    for (auto d : devicesWhithProps) {
+        if (d.second.deviceType == 
 #if POWER_SAVE
-                VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU
+            VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU
 #else
-                VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
+            VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
 #endif
-            ) {
-                physDev = d.first;
-            }
+        ) {
+            physDev = d.first;
         }
-
-        if (physDev == VK_NULL_HANDLE) {
-            physDev = devicesWhithProps.begin()->first;
-        }
-
-        if (physDev == VK_NULL_HANDLE) {
-            PRINT_E("None of your GPUs is appropriate. You must buy an expensive cool adapter");
-            return APP_CODE_VK_INIT_FAIURE;
-        }
-
-        VkPhysicalDeviceProperties seletedDevProps = devicesWhithProps.at(physDev);
-        PRINT("Using %s GPU: \"%s\"",
-            (seletedDevProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-            ? "discrete"
-            : (seletedDevProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
-              ? "integrated"
-              : (seletedDevProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU)
-                ? "virtual"
-                : "uncknown-type",
-            seletedDevProps.deviceName);
     }
 
-    // Create logical device
-    {
-        
+    if (physDev == VK_NULL_HANDLE) {
+        physDev = devicesWhithProps.begin()->first;
     }
+
+    if (physDev == VK_NULL_HANDLE) {
+        PRINT_E("None of your GPUs is appropriate. You must buy an expensive cool adapter");
+        return APP_CODE_VK_INIT_FAIURE;
+    }
+
+    VkPhysicalDeviceProperties seletedDevProps = devicesWhithProps.at(physDev);
+    PRINT("Using %s GPU: \"%s\"",
+        (seletedDevProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+        ? "discrete"
+        : (seletedDevProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
+            ? "integrated"
+            : (seletedDevProps.deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU)
+            ? "virtual"
+            : "uncknown-type",
+        seletedDevProps.deviceName);
 
     return APP_CODE_OK;
 }

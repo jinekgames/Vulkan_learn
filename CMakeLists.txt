@@ -31,11 +31,4 @@ set(GLM_DIR ${SUBMODULES_DIR}/glm)
 set(FINAL_OUT ${BINS_DIR}/final_package)
 
 
-if (MSVC)
-	add_compile_options(/std:c++17)
-else() # GCC 8+
-    add_compile_options(-std=c++17)
-endif()
-
-
 add_subdirectory(${CODE_DIR} ${FINAL_OUT})

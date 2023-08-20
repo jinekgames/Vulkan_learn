@@ -9,9 +9,12 @@ include_directories(
 )
 
 set(SOURCE
+    # main
     prog.cpp
+    # app internal realization
     app/app.h
     app/app.cpp
+    # vulkan api realization
     app/vulkan_app/vulkan_app.h
     app/vulkan_app/vulkan_app.cpp
 )

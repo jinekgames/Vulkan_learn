@@ -12,11 +12,11 @@ int main() {
 
     auto result = App::Inst().Run();
 
-    if (!CHECK_RESULT(result)) {
+    if (!APP_CHECK_RESULT(result)) {
         PRINT_E("Failed to run app. Code: %d", result);
         return result;
     }
 
     PRINT("Finished");
-    return result;
+    return 0;
 }

@@ -9,7 +9,7 @@
 #include <optional>
 #include <vector>
 
-class App : public VulkanApp {
+class App final : public VulkanApp {
 
 // Public methods
 public:

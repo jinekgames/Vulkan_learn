@@ -3,6 +3,9 @@
 #include <array>
 
 
+// @todo move some of this options to CMake or to cli options
+
+
 // Default window size
 
 #define APP_DEFAULT_WINDOW_WIDTH  800
@@ -23,4 +26,10 @@ constexpr std::array<const char*, vulkanValidationLayersCount> vulkanValidationL
     "RenderDoc_Vulkan_GLES_Layer",
 };
 
-#define POWER_SAVE 0
+
+// If POWER_SAVE is true an integrated GPU will be used. If false, then discrete
+#define POWER_SAVE 1
+
+
+// Enables logs if true
+#define DEBUG_LOGS 1

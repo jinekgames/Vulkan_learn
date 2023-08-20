@@ -17,6 +17,7 @@ class VulkanApp {
 public:
 
 typedef std::vector<const char*> NamesList;
+
 // Vulkan extinsions' list
 typedef NamesList ExtensionsList;
 // Vulkan layers' list
@@ -32,6 +33,9 @@ protected:
 
 // App init Private methods
 private:
+
+    AppResult CreateVkInstance();
+    AppResult FindPhysicalDevice();
 
     AppResult FindUnsupportedExtensions(const ExtensionsList& exts, ExtensionsList& unsupportedExts);
     AppResult FindUnsupportedLayers(const LayersList& layers, LayersList& unsupportedLayers);

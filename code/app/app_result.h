@@ -14,4 +14,12 @@ enum AppResultCodes : AppResult {
     APP_CODE_UNKNOWN = ~((AppResult)0)
 };
 
-#define CHECK_RESULT(res) (res == APP_CODE_OK)
+// Become true if AppResult is OK
+#define APP_CHECK_RESULT(res) (res == APP_CODE_OK)
+
+// Return AppResult if is not OK
+#define APP_CHECK_CALL(call)                       \
+    do {                                           \
+        AppResult res = call;                      \
+        if (!APP_CHECK_RESULT(res)) return res;    \
+    } while(0)

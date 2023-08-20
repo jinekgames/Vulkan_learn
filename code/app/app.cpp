@@ -22,7 +22,7 @@ AppResult App::Run() {
     AppResult r = APP_CODE_OK;
 
     r = Init();
-    if (!CHECK_RESULT(r)) {
+    if (!APP_CHECK_RESULT(r)) {
         Clear();
         return r;
     }
@@ -36,12 +36,12 @@ AppResult App::Init() {
     AppResult r = APP_CODE_OK;
 
     r = InitWindow();
-    if(!CHECK_RESULT(r)) {
+    if(!APP_CHECK_RESULT(r)) {
         return r;
     }
 
     r = VulkanApp::Init();
-    if(!CHECK_RESULT(r)) {
+    if(!APP_CHECK_RESULT(r)) {
         return r;
     }
 
